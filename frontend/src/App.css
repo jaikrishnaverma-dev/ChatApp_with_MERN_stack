@@ -1,0 +1,46 @@
+:root{
+  --color0:#075e54;
+  --color1:#0c8174;
+  --color2:#25d366;
+  --color3:#dcf8c6; 
+  --color4:#34b7f1; 
+  --color5:#ece5dd; 
+}
+body{
+  background-color: var(--color5);
+}
+.navbar{
+  background-color: var(--color1) !important;
+  color: rgba(255, 255, 255, 0.616) ;
+  padding-bottom: 0px;
+}
+.max50{
+  max-width: 50%;
+}
+a.navlinks{
+text-decoration: none;
+color: rgba(255, 255, 255, 0.616);
+border-bottom: 4.7px solid transparent;
+}
+.navlinks.active{
+  color: white;
+  border-bottom: 4.7px solid white;
+}
+.auth-form{
+  max-width: 300px;
+}
+.logo-icon{
+  color: var(--color1);
+  font-size: 9vh;
+}
+.auth-container{
+  background-image: url(../public/logo1921.png);
+}
+.btn-mine{
+  background-color: var(--color0);
+  color: var(--color5);
+}
+.btn-mine:hover{
+  background-color: var(--color1);
+  color: var(--color5);
+}
