@@ -1,16 +1,16 @@
 import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Secure from '../HOC/Secure'
 import HeadBar from './header/HeadBar'
 import Chat from './pages/Chat'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 
 const Routers = () => {
-
     const router=createBrowserRouter([
         {
             path:'/',
-            element:<HeadBar/>,
+            element:<Secure Component={HeadBar}/>,
             children:[
                    {
                     path:'/',
@@ -23,11 +23,11 @@ const Routers = () => {
             ]
         },
         {
-            path:'login',
+            path:'/login',
             element:<Login/>
         },
         {
-            path:'Signup',
+            path:'/signup',
             element:<Signup/>
         },
         

@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { MyContext } from "../../myContext/MyContext";
 
 const HeadBar = () => {
+  const { user,setUser } = useContext(MyContext);
   return (
     <>
     <header>
       <nav className="navbar sticky-top navbar-dark">
         <div className="container-fluid d-flex justify-content-between align-items-center mb-3">
-          <a className="navbar-brand fw-bold fs-4 max50" href="#">
+          <a className="navbar-brand fw-bold fs-4 max50" href="#" onClick={()=>{setUser('');localStorage.removeItem("userInfo")}}>
             Whatsapp
           </a>
           <div className="max50 text-white fs-4">
