@@ -1,31 +1,50 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useFetch from "../../../customHooks/useFetch";
-import { MyContext } from "../../../myContext/MyContext";
+import useFetch from "../../customHooks/useFetch";
+import { MyContext } from "../../myContext/MyContext";
+import AddGroup from "../mui_comp/AddGroup";
 
-const UsersList = () => {
+const Users = () => {
   const { user } = useContext(MyContext);
   const [state, setState] = useState({
-    users: [],
+    usersAndGroups: [],
     toasts: [],
+    left:false
   });
   const { data, loading, error } = useFetch(
     "/api/user",
     user ? user.token : ""
   );
   useEffect(() => {
-    setState({ users: data });
-  }, [user]);
+    setState({ usersAndGroups: data });
+ 
+  }, [data]);
   const navigate = useNavigate();
+  console.log('firstfirst',state)
   return (
     <div
       className="col-12 bg-white "
       style={{ height: "84.2vh", overflowY: "scroll" }}
     >
-      <div className="my-3 p-2 rounded container">
+      <div className="mb-3 p-2 rounded container">
+        <AddGroup state={state} setState={setState}>
+        <div onClick={()=>setState(prev=>{return{...prev,left:!prev.left}})} className="d-flex align-items-center justify-content-center add-group p-3 my-3 text-white bg-purple rounded shadow-sm">
+          <img
+            className="mx-3 rounded-circle"
+            src="ui-1536_512.gif"
+            alt=""
+            width="50"
+            height="50"
+          />
+          <div className="lh-1" >
+            <h1 className="h3 mb-0 text-white lh-1">CREATE GROUP</h1>
+          </div>
+        </div>
+        </AddGroup>
+      
         <h6 className="border-bottom pb-2 mb-0">Users & Groups</h6>
-        {data &&
-          data.map((x) => (
+        {state.usersAndGroups &&
+          state.usersAndGroups.map((x) => (
             <div
               className="d-flex text-muted pt-3"
               onClick={() => navigate(`/chat/${x._id}`)}
@@ -51,4 +70,4 @@ const UsersList = () => {
   );
 };
 
-export default UsersList;
+export default Users;

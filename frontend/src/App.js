@@ -1,3 +1,4 @@
+import { SnackbarProvider } from "notistack";
 import "./App.css";
 import Routers from "./component/Routers";
 import ChatProvider from "./myContext/MyContext";
@@ -5,7 +6,9 @@ import ChatProvider from "./myContext/MyContext";
 function App() {
   return (
     <ChatProvider>
-      <Routers />
+      <SnackbarProvider maxSnack={3}>
+        <Routers />
+      </SnackbarProvider>
     </ChatProvider>
   );
 }

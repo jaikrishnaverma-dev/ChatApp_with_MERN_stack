@@ -1,34 +1,82 @@
-import React, { useContext } from "react";
+import { TextField } from "@mui/material";
+import React, { useContext, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { MyContext } from "../../myContext/MyContext";
-
 const HeadBar = () => {
-  const { user,setUser } = useContext(MyContext);
+  const { user, setUser } = useContext(MyContext);
+  const [search, setSearch] = useState(false);
+
+
   return (
     <>
-    <header>
-      <nav className="navbar sticky-top navbar-dark">
-        <div className="container-fluid d-flex justify-content-between align-items-center mb-3">
-          <a className="navbar-brand fw-bold fs-4 max50" href="#" onClick={()=>{setUser('');localStorage.removeItem("userInfo")}}>
-            Whatsapp
-          </a>
-          <div className="max50 text-white fs-4">
-            <i className="bi bi-search mx-3"></i>
-            <i className="bi bi-three-dots-vertical"></i>
-          </div>
-        </div>
-        <div className="container-fluid d-flex justify-content-between align-items-center mt-2 ">
-          <NavLink to={'/groups'} className="navlinks col-1 text-center fs-6 ">
-            <i className="bi bi-people-fill"></i>
-          </NavLink>
-          <NavLink to={'/'} className="col-3 navlinks text-center fs- fw-bold">CHATS</NavLink>
-          <NavLink to={'/status'} className="col-3 navlinks text-center fs-6 fw-bold">STATUS</NavLink>
-          <NavLink to={'/calls'} className="col-3 navlinks text-center fs-6 fw-bold">CALLS</NavLink>
-        </div>
-      </nav>
+      <header>
+        <nav className="navbar sticky-top navbar-dark">
+          {search ? (
+            <div className="d-flex m-3 mb-4 align-items-center col-11">
+              <i
+                className="bi bi-arrow-left fs-1 me-4"
+                onClick={() => setSearch(false)}
+              ></i>
+              <TextField
+                id="standard-basic"
+                className="searchInput"
+                label="Search Users"
+                variant="standard"
+              />
+            </div>
+          ) : (
+            <>
+              <div className="container-fluid mb-4 d-flex justify-content-between align-items-center mb-1">
+                <a
+                  className="navbar-brand fw-bold fs-4 max50"
+                  href="#"
+                  onClick={() => {
+                    setUser("");
+                    localStorage.removeItem("userInfo");
+                  }}
+                >
+                  Whatsapp
+                </a>
+                <div className="max50 text-white fs-4">
+                  <i
+                    className="bi bi-search mx-3"
+                    onClick={() => setSearch((prev) => !prev)}
+                  ></i>
+                  <i className="bi bi-three-dots-vertical"></i>
+                </div>
+              </div>
+              <div className="container-fluid d-flex justify-content-between align-items-center ">
+                <NavLink
+                  to={"/users"}
+                  className="navlinks col-1 text-center fs-6 "
+                >
+                  <i className="bi bi-people-fill"></i>
+                </NavLink>
+                <NavLink
+                  to={"/"}
+                  className="col-3 navlinks text-center fs- fw-bold"
+                >
+                  CHATS
+                </NavLink>
+                <NavLink
+                  to={"/status"}
+                  className="col-3 navlinks text-center fs-6 fw-bold"
+                >
+                  STATUS
+                </NavLink>
+                <NavLink
+                  to={"/calls"}
+                  className="col-3 navlinks text-center fs-6 fw-bold"
+                >
+                  CALLS
+                </NavLink>
+              </div>
+            </>
+          )}
+        </nav>
       </header>
       <main>
-        <Outlet/>
+        <Outlet />
       </main>
     </>
   );

@@ -1,32 +1,24 @@
 import axios from "axios";
+import { useSnackbar } from "notistack";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import AlreadyLogged from "../../customHooks/AlreadyLogged";
-import Toasts from "../assests/Toasts";
 const initialState = {
   name: "",
   email: "",
   password: "",
   confirmpassword: "",
-  mobile:'',
+  mobile: "",
   pic: "",
   loading: false,
-  show:false,
+  show: false,
 };
 const Signup = () => {
-  AlreadyLogged()
+  AlreadyLogged();
+  const { enqueueSnackbar } = useSnackbar();
   const [state, setState] = useState(initialState);
-  const [toasts, setToasts] = useState([]);
   const postDetails = (pics) => {
     setState({ ...state, loading: true });
-    setToasts([
-      {
-        title: "",
-        time: "",
-        msg: "Please Select An Image!",
-        status: "warning",
-      },
-    ]);
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
       const data = new FormData();
       data.append("file", pics);
@@ -45,37 +37,20 @@ const Signup = () => {
           setState({ ...state, loading: false });
         });
     } else {
-      setToasts([
-        {
-          title: "",
-          time: "",
-          msg: "Please Select An Image!",
-          status: "warning",
-        },
-      ]);
+      enqueueSnackbar("Please select Image.", { variant: "warning" });
     }
   };
 
   const submitHandler = async () => {
-    const { name, email, password, confirmpassword,mobile, pic } = state;
+    const { name, email, password, confirmpassword, mobile, pic } = state;
     setState({ ...state, loading: true });
     if (!name || !email || !password || !confirmpassword || !mobile) {
-      setToasts([
-        {
-          msg: "Please fill all fields!",
-          status: "warning",
-        },
-      ]);
+      enqueueSnackbar("Please Fill All Fields.", { variant: "warning" });
       setState({ ...state, loading: false });
       return;
     }
     if (password !== confirmpassword) {
-      setToasts([
-        {
-          msg: "Passwords Do Not Match",
-          status: "warning",
-        },
-      ]);
+      enqueueSnackbar("Password do not matched.", { variant: "error" });
       setState({ ...state, loading: false });
       return;
     }
@@ -96,37 +71,32 @@ const Signup = () => {
         },
         config
       );
-      setToasts([
-        {
-          title: "Great work",
-          msg: "Registration successfull!",
-          status: "success",
-        },
-      ]);
+
+      enqueueSnackbar("Registerd Successfully.", { variant: "success" });
       localStorage.setItem("userInfo", JSON.stringify(data));
       setState(initialState);
       // history.push("/chats");
     } catch (error) {
-      setToasts([
-        {
-          title: "Error",
-          msg: "Something went wrong.",
-          status: "danger",
-        },
-      ]);
+      enqueueSnackbar(error.response.data.message, { variant: "error" });
       setState({ ...state, loading: false });
     }
   };
   return (
     <section className="auth-container vh-100 d-flex flex-column align-items-center justify-content-center">
-      <form className="auth-form" onSubmit={(e)=>{e.preventDefault();submitHandler()}}>
+      <form
+        className="auth-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          submitHandler();
+        }}
+      >
         <div className="d-md-flex mt-md-4 align-items-center justify-content-between">
-        <p className="m-0 p-0 logo-icon text-center">
-          <i className="bi bi-chat-right-quote-fill"></i>
-        </p>
-        <h4 className=" mb-3 fw-normal">Create new account</h4>
+          <p className="m-0 p-0 logo-icon text-center">
+            <i className="bi bi-chat-right-quote-fill"></i>
+          </p>
+          <h4 className=" mb-3 fw-normal">Create new account</h4>
         </div>
-        
+
         <div className="form-floating mb-1">
           <input
             type="text"
@@ -166,7 +136,7 @@ const Signup = () => {
         </div>
         <div className="form-floating mb-1 position-relative">
           <input
-            type={state.show?'text':'password'}
+            type={state.show ? "text" : "password"}
             className="form-control"
             id="floatingPassword"
             value={state.password}
@@ -174,12 +144,20 @@ const Signup = () => {
             placeholder="Password"
             required
           />
-     <p className="position-absolute fs-4 mb-0 text-secondary" onClick={()=>setState({...state,show:!state.show})} style={{zIndex:1000,top:'10px',right:'15px'}}><i className={`bi bi-eye-${(state.show?'fill':'slash-fill')}`}></i></p>
+          <p
+            className="position-absolute fs-4 mb-0 text-secondary"
+            onClick={() => setState({ ...state, show: !state.show })}
+            style={{ zIndex: 1000, top: "10px", right: "15px" }}
+          >
+            <i
+              className={`bi bi-eye-${state.show ? "fill" : "slash-fill"}`}
+            ></i>
+          </p>
           <label htmlFor="floatingPassword">Password</label>
         </div>
         <div className="form-floating mb-1">
           <input
-            type={state.show?'text':'password'}
+            type={state.show ? "text" : "password"}
             className="form-control"
             id="floatingPassword"
             value={state.confirmpassword}
@@ -229,7 +207,6 @@ const Signup = () => {
         </small>
         <p className="mt-3 text-muted">© 2023–2030 jai.corp</p>
       </form>
-      <Toasts toasts={toasts} />
     </section>
   );
 };

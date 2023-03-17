@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import Toasts from "../assests/Toasts";
 import AlreadyLogged from "../../customHooks/AlreadyLogged";
 import { MyContext } from "../../myContext/MyContext";
+import { useSnackbar } from "notistack";
 const Login = () => {
   AlreadyLogged()
   const {user,setUser}=useContext(MyContext)
@@ -12,18 +12,13 @@ const Login = () => {
     password: "",
     loading: false,
   });
-  const [toasts, setToasts] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
   const submitHandler = async () => {
     const { email, password } = state;
     setState({ ...state, loading: true });
     if (!email || !password) {
       setState({ ...state, loading: false });
-      setToasts([
-        {
-          msg: "Please fill all fiels!!",
-          status: "warning",
-        },
-      ]);
+       enqueueSnackbar("Please Fill all Fields.",{variant:'warning'});
       return;
     }
 
@@ -46,25 +41,12 @@ const Login = () => {
         password: "",
         loading: false,
       });
-      setToasts([
-        {
-          title: "Great Work",
-          time: "",
-          msg: "Login Successfully!",
-          status: "success",
-        },
-      ]);
+        enqueueSnackbar("Logged In SuccessFully.",{variant:'success'});
       setUser(data)
       localStorage.setItem("userInfo", JSON.stringify(data));
       // history.push("/chats");
     } catch (error) {
-      setToasts([
-        {
-          title: "Something went wrong!",
-          msg: error.response.data.message,
-          status: "danger",
-        },
-      ]);
+      enqueueSnackbar(error.response.data.message,{variant:'error'});
       setState({ ...state, loading: false });
     }
   };
@@ -138,7 +120,6 @@ const Login = () => {
         </small>
         <p className="mt-5 text-muted">© 2023–2030 jai.corp</p>
       </form>
-      <Toasts toasts={toasts} />
     </section>
   );
 };
