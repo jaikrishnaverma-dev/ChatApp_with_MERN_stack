@@ -1,14 +1,9 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import {
-  Autocomplete,
-  Button,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, Button, TextField } from "@mui/material";
 import { MyContext } from "../../myContext/MyContext";
 import useFetchFun from "../../customHooks/useFetchFun";
-import { useSnackbar } from "notistack";
 
 const style = {
   position: "absolute",
@@ -23,33 +18,41 @@ const style = {
 };
 
 export default function AddGroup(props) {
-  const { state, setState, children } = props;
-  // const { enqueueSnackbar } = useSnackbar();
-  const [group,setGroup]=React.useState({
-    name:'',
-    users:[]
-  })
-  const open = state.left;
+  const { users, setusers, children } = props;
+  const [group, setGroup] = React.useState({
+    name: "",
+    users: [],
+  });
+  // close modal
   const handleClose = () => setOpen(false);
+  // control modal open & close 
   const setOpen = (sign) => {
-    setState((prev) => {
+    setusers((prev) => {
       return { ...prev, left: sign };
     });
   };
-  const { user } = React.useContext(MyContext);
-  const {apiCaller,data,loading,error}= useFetchFun(
-  );
-  const createGroup=async ()=>{
-    await apiCaller("/api/chat/group",user ? user.token : "","POST",{...group,users:JSON.stringify(group.users)})
-  }
+  // state of context api
+  const { state } = React.useContext(MyContext);
+  // custom hook to call api
+  const { apiCaller } = useFetchFun();
+  // submit handler after 
+  const createGroup = async () => {
+    await apiCaller(
+      "/api/chat/group",
+      true,
+      state.session ? state.session.token : "",
+      "POST",
+      { ...group, users: JSON.stringify(group.users) }
+    );
+    handleClose();
+  };
 
-  console.log(group)
   return (
     <>
       {children}
       <Modal
         keepMounted
-        open={open}
+        open={users.left}
         onClose={handleClose}
         aria-labelledby="keep-mounted-modal-title"
         aria-describedby="keep-mounted-modal-description"
@@ -61,18 +64,17 @@ export default function AddGroup(props) {
             sx={{ mb: 3, width: "98%" }}
             label="Enter Group Name"
             variant="standard"
-            onChange={(e)=>setGroup({...group,name:e.target.value})}
+            onChange={(e) => setGroup({ ...group, name: e.target.value })}
           />
-
           <Autocomplete
             multiple
             limitTags={2}
-            onChange={(event,userArr)=>{
-              let groupUsers=userArr.map(x=>x._id)
-              setGroup({...group,users:groupUsers})
+            onChange={(event, userArr) => {
+              let groupUsers = userArr.map((x) => x._id);
+              setGroup({ ...group, users: groupUsers });
             }}
             id="multiple-limit-tags"
-            options={state.usersAndGroups ? state.usersAndGroups : []}
+            options={users.users ? users.users : []}
             getOptionLabel={(option) => option.name}
             defaultValue={[]}
             renderInput={(params) => (
@@ -93,28 +95,6 @@ export default function AddGroup(props) {
           >
             Create
           </Button>
-          {/* <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-   {
-    [1,1].map(x=><>
-       <ListItem alignItems="flex-start">
-        <ListItemAvatar>
-          <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-        </ListItemAvatar>
-        <ListItemText
-          primary="Brunch this weekend?"
-          secondary={
-            <React.Fragment>
-              {"I'll be in your neighborhood doing errands this…"}
-            </React.Fragment>
-          }
-        />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-    </>)
-   }
-    
-    
-    </List> */}
         </Box>
       </Modal>
     </>

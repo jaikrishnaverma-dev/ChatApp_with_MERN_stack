@@ -3,16 +3,18 @@ export const MyContext = createContext();
 
 
 const ChatProvider = ({ children }) => {
-  const [user, setUser] = useState();
+  const [state, setState] = useState({
+    session:{},
+    loading:true,
+  });
   useEffect(()=>{
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     if (userInfo) {
-      console.log("userInfo=>",userInfo)
-      setUser(userInfo)
+      setState({...userInfo})
     }
   },[])
   return (
-    <MyContext.Provider value={{ user, setUser }}>
+    <MyContext.Provider value={{ state, setState }}>
       {children}
     </MyContext.Provider>
   );

@@ -3,10 +3,8 @@ import React, { useContext, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { MyContext } from "../../myContext/MyContext";
 const HeadBar = () => {
-  const { user, setUser } = useContext(MyContext);
+  const { setState } = useContext(MyContext);
   const [search, setSearch] = useState(false);
-
-
   return (
     <>
       <header>
@@ -17,6 +15,7 @@ const HeadBar = () => {
                 className="bi bi-arrow-left fs-1 me-4"
                 onClick={() => setSearch(false)}
               ></i>
+              
               <TextField
                 id="standard-basic"
                 className="searchInput"
@@ -27,20 +26,18 @@ const HeadBar = () => {
           ) : (
             <>
               <div className="container-fluid mb-4 d-flex justify-content-between align-items-center mb-1">
-                <a
-                  className="navbar-brand fw-bold fs-4 max50"
-                  href="#"
-                  onClick={() => {
-                    setUser("");
-                    localStorage.removeItem("userInfo");
-                  }}
-                >
-                  Whatsapp
-                </a>
+                <p className="navbar-brand fw-bold fs-4 max50 mx-1">Whatsapp</p>
                 <div className="max50 text-white fs-4">
                   <i
                     className="bi bi-search mx-3"
                     onClick={() => setSearch((prev) => !prev)}
+                  ></i>
+                  <i
+                    onClick={() => {
+                      setState({ session: false });
+                      localStorage.removeItem("userInfo");
+                    }}
+                    className="bi bi-box-arrow-left mx-2"
                   ></i>
                   <i className="bi bi-three-dots-vertical"></i>
                 </div>

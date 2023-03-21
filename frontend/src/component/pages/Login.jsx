@@ -1,28 +1,30 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AlreadyLogged from "../../customHooks/AlreadyLogged";
 import { MyContext } from "../../myContext/MyContext";
 import { useSnackbar } from "notistack";
 const Login = () => {
-  AlreadyLogged()
-  const {user,setUser}=useContext(MyContext)
-  const [state, setState] = useState({
+  const { setState } = useContext(MyContext);
+  const [login, setlogin] = useState({
     email: "",
     password: "",
     loading: false,
   });
+  // sneakbar for notifications
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+  // customHook to check user already logged in or not if loggedin redrect to root
+  AlreadyLogged();
+  //message submit handler
   const submitHandler = async () => {
-    const { email, password } = state;
-    setState({ ...state, loading: true });
+    const { email, password } = login;
+    setlogin({ ...login, loading: true });
     if (!email || !password) {
-      setState({ ...state, loading: false });
-       enqueueSnackbar("Please Fill all Fields.",{variant:'warning'});
+      setlogin({ ...login, loading: false });
+      enqueueSnackbar("Please Fill all Fields.", { variant: "warning" });
       return;
     }
-
-    // console.log(email, password);
     try {
       const config = {
         headers: {
@@ -35,25 +37,31 @@ const Login = () => {
         { email, password },
         config
       );
-    
-      setState({
+
+      setlogin({
         email: "",
         password: "",
         loading: false,
       });
-        enqueueSnackbar("Logged In SuccessFully.",{variant:'success'});
-      setUser(data)
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      // history.push("/chats");
+      enqueueSnackbar("Logged In SuccessFully.", { variant: "success" });
+      setState({ session: data });
+      localStorage.setItem("userInfo", JSON.stringify({ session: data }));
+      navigate("/");
     } catch (error) {
-      enqueueSnackbar(error.response.data.message,{variant:'error'});
-      setState({ ...state, loading: false });
+      // error notification
+      enqueueSnackbar(error.response.data.message, { variant: "error" });
+      setlogin({ ...login, loading: false });
     }
   };
-  console.log(state);
   return (
     <section className="auth-container vh-100 d-flex flex-column align-items-center justify-content-center">
-      <form onSubmit={(e)=>{e.preventDefault();submitHandler()}} className="auth-form">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submitHandler();
+        }}
+        className="auth-form"
+      >
         <p className="m-4 logo-icon text-center">
           <i className="bi bi-chat-right-quote-fill"></i>
         </p>
@@ -65,28 +73,28 @@ const Login = () => {
             className="form-control"
             id="floatingInput"
             placeholder="name@example.com"
-            value={state.email}
-            onChange={(e) => setState({ ...state, email: e.target.value })}
+            value={login.email}
+            onChange={(e) => setlogin({ ...login, email: e.target.value })}
           />
           <label for="floatingInput">Email or Mobile no.</label>
         </div>
         <div className="form-floating mb-1 position-relative">
           <input
-            type={state.show ? "text" : "password"}
+            type={login.show ? "text" : "password"}
             className="form-control"
             id="floatingPassword"
-            value={state.password}
-            onChange={(e) => setState({ ...state, password: e.target.value })}
+            value={login.password}
+            onChange={(e) => setlogin({ ...login, password: e.target.value })}
             placeholder="Password"
             required
           />
           <p
             className="position-absolute fs-4 mb-0 text-secondary"
-            onClick={() => setState({ ...state, show: !state.show })}
+            onClick={() => setlogin({ ...login, show: !login.show })}
             style={{ zIndex: 1000, top: "10px", right: "15px" }}
           >
             <i
-              className={`bi bi-eye-${state.show ? "fill" : "slash-fill"}`}
+              className={`bi bi-eye-${login.show ? "fill" : "slash-fill"}`}
             ></i>
           </p>
           <label htmlFor="floatingPassword">Password</label>
@@ -99,11 +107,11 @@ const Login = () => {
         </div>
         <button
           className={`w-100 btn btn-lg btn-mine mb-3 ${
-            state.loading ? "p-0" : ""
+            login.loading ? "p-0" : ""
           }`}
           type="submit"
         >
-          {state.loading ? (
+          {login.loading ? (
             <img
               style={{ width: "50px" }}
               className=" end-0 top-0"

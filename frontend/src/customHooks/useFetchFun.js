@@ -1,20 +1,18 @@
 import axios from "axios";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+// custom hook to fetch api  
 const useFetchFun = () => {
   const [data, setdata] = useState(null);
   const [loading, setloading] = useState(true);
-  const [error, seterror] = useState("");
   const { enqueueSnackbar } = useSnackbar();
-  const useFetch = async (url,token,method="GET",payload={}) => {
+  const useFetch = async (url,notify=true,token,method="GET",payload={}) => {
     let res={}
     try{
     let config = { headers: { 
         "Content-Type": "application/json",
         Authorization: "Bearer " + token } 
     };
-   
-    
     if(method==="GET")
     res = await axios(url, config);
     if(method==="POST")
@@ -22,18 +20,19 @@ const useFetchFun = () => {
     if(method==="PUT")
     res = await axios.put(url,payload, config);
     const data=res.data
-    console.log('useFetch er==>',res)
-    seterror(data.error);
     setdata(data);
+    if(notify)
     enqueueSnackbar("Successfully Completed.",{variant:'success'})    
     setloading(false);
     }catch(error){
-     console.log('useFetch Error==>',error)
+    // to check errors  console.log('useFetch Error==>',error)
+     setloading(false);
+     if(notify)
      enqueueSnackbar(error.response.data.message,{variant:'error'})    
-     seterror(error);
     }
+    return res.data
   };
  
-  return {apiCaller:useFetch,data, loading, error };
+  return {apiCaller:useFetch,data, loading };
 };
 export default useFetchFun;

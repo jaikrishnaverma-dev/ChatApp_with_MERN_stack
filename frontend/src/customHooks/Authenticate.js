@@ -5,11 +5,11 @@ import { MyContext } from "../myContext/MyContext";
 // custom hook to check authenticated or not if not then redirect to login
 const Authenticate = () => {
     const navigate=useNavigate()
-    const { user } = useContext(MyContext);
+    const { state } = useContext(MyContext);
     useEffect(() => {
-      if (!user) {
+      if (!state.session) {
         navigate("/login");
       }
-    },[user]);
+    },[state.session]);
   }
   export default Authenticate

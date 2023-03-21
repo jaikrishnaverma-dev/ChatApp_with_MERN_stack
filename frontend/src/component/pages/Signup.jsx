@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useSnackbar } from "notistack";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import AlreadyLogged from "../../customHooks/AlreadyLogged";
-const initialState = {
+import { MyContext } from "../../myContext/MyContext";
+const initialsignup = {
   name: "",
   email: "",
   password: "",
@@ -13,12 +14,17 @@ const initialState = {
   loading: false,
   show: false,
 };
+
+
 const Signup = () => {
+  const { setState } = useContext(MyContext);
+  // customHook to check user already logged in or not if loggedin redrect to root
   AlreadyLogged();
   const { enqueueSnackbar } = useSnackbar();
-  const [state, setState] = useState(initialState);
+  const [signup, setsignup] = useState(initialsignup);
+  // function to manage image upload on cloudinary
   const postDetails = (pics) => {
-    setState({ ...state, loading: true });
+    setsignup({ ...signup, loading: true });
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
       const data = new FormData();
       data.append("file", pics);
@@ -30,55 +36,68 @@ const Signup = () => {
       })
         .then((res) => res.json())
         .then((re) => {
-          setState({ ...state, pic: re.url.toString(), loading: false });
+          setsignup({ ...signup, pic: re.url.toString(), loading: false });
         })
         .catch((err) => {
-          console.log(err);
-          setState({ ...state, loading: false });
+          enqueueSnackbar("Image not uploaded successfully", {
+            variant: "error",
+          });
+          setsignup({ ...signup, loading: false });
         });
     } else {
       enqueueSnackbar("Please select Image.", { variant: "warning" });
     }
   };
-
+  //sign up form submit handler with validation
   const submitHandler = async () => {
-    const { name, email, password, confirmpassword, mobile, pic } = state;
-    setState({ ...state, loading: true });
-    if (!name || !email || !password || !confirmpassword || !mobile) {
-      enqueueSnackbar("Please Fill All Fields.", { variant: "warning" });
-      setState({ ...state, loading: false });
-      return;
-    }
-    if (password !== confirmpassword) {
-      enqueueSnackbar("Password do not matched.", { variant: "error" });
-      setState({ ...state, loading: false });
-      return;
-    }
-    try {
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-        },
-      };
-      const { data } = await axios.post(
-        "/api/user",
-        {
-          name,
-          email,
-          mobile,
-          password,
-          pic,
-        },
-        config
+    const { name, email, password, confirmpassword, mobile, pic } = signup;
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+      enqueueSnackbar("wrong email address.", { variant: "error" });
+    } else if (
+      !/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)
+    ) {
+      enqueueSnackbar(
+        "Password should be min 8 letter password, with at least a symbol, upper and lower case letters and a number. ",
+        { variant: "error" }
       );
+    } else {
+      setsignup({ ...signup, loading: true });
+      if (!name || !email || !password || !confirmpassword || !mobile) {
+        enqueueSnackbar("Please Fill All Fields.", { variant: "warning" });
+        setsignup({ ...signup, loading: false });
+        return;
+      }
+      if (password !== confirmpassword) {
+        enqueueSnackbar("Password do not matched.", { variant: "error" });
+        setsignup({ ...signup, loading: false });
+        return;
+      }
+      try {
+        const config = {
+          headers: {
+            "Content-type": "application/json",
+          },
+        };
+        const { data } = await axios.post(
+          "/api/user",
+          {
+            name,
+            email,
+            mobile,
+            password,
+            pic,
+          },
+          config
+        );
 
-      enqueueSnackbar("Registerd Successfully.", { variant: "success" });
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      setState(initialState);
-      // history.push("/chats");
-    } catch (error) {
-      enqueueSnackbar(error.response.data.message, { variant: "error" });
-      setState({ ...state, loading: false });
+        enqueueSnackbar("Registerd Successfully.", { variant: "success" });
+        localStorage.setItem("userInfo", JSON.stringify({ session: data }));
+        setState({session:data})
+        setsignup(initialsignup);
+      } catch (error) {
+        enqueueSnackbar(error.response.data.message, { variant: "error" });
+        setsignup({ ...signup, loading: false });
+      }
     }
   };
   return (
@@ -101,8 +120,8 @@ const Signup = () => {
           <input
             type="text"
             name="name"
-            value={state.name}
-            onChange={(e) => setState({ ...state, name: e.target.value })}
+            value={signup.name}
+            onChange={(e) => setsignup({ ...signup, name: e.target.value })}
             className="form-control"
             id="floatingInput"
             placeholder="name@example.com"
@@ -114,8 +133,8 @@ const Signup = () => {
           <input
             type="text"
             className="form-control"
-            value={state.mobile}
-            onChange={(e) => setState({ ...state, mobile: e.target.value })}
+            value={signup.mobile}
+            onChange={(e) => setsignup({ ...signup, mobile: e.target.value })}
             id="floatingInput"
             placeholder="+91 8787878787"
             required
@@ -126,8 +145,8 @@ const Signup = () => {
           <input
             type="email"
             className="form-control"
-            value={state.email}
-            onChange={(e) => setState({ ...state, email: e.target.value })}
+            value={signup.email}
+            onChange={(e) => setsignup({ ...signup, email: e.target.value })}
             id="floatingInput"
             placeholder="name@example.com"
             required
@@ -136,33 +155,33 @@ const Signup = () => {
         </div>
         <div className="form-floating mb-1 position-relative">
           <input
-            type={state.show ? "text" : "password"}
+            type={signup.show ? "text" : "password"}
             className="form-control"
             id="floatingPassword"
-            value={state.password}
-            onChange={(e) => setState({ ...state, password: e.target.value })}
+            value={signup.password}
+            onChange={(e) => setsignup({ ...signup, password: e.target.value })}
             placeholder="Password"
             required
           />
           <p
             className="position-absolute fs-4 mb-0 text-secondary"
-            onClick={() => setState({ ...state, show: !state.show })}
+            onClick={() => setsignup({ ...signup, show: !signup.show })}
             style={{ zIndex: 1000, top: "10px", right: "15px" }}
           >
             <i
-              className={`bi bi-eye-${state.show ? "fill" : "slash-fill"}`}
+              className={`bi bi-eye-${signup.show ? "fill" : "slash-fill"}`}
             ></i>
           </p>
           <label htmlFor="floatingPassword">Password</label>
         </div>
         <div className="form-floating mb-1">
           <input
-            type={state.show ? "text" : "password"}
+            type={signup.show ? "text" : "password"}
             className="form-control"
             id="floatingPassword"
-            value={state.confirmpassword}
+            value={signup.confirmpassword}
             onChange={(e) =>
-              setState({ ...state, confirmpassword: e.target.value })
+              setsignup({ ...signup, confirmpassword: e.target.value })
             }
             placeholder="Password"
             required
@@ -186,11 +205,11 @@ const Signup = () => {
         </div>
         <button
           className={`w-100 btn btn-lg btn-mine mb-3 ${
-            state.loading ? "p-0" : ""
+            signup.loading ? "p-0" : ""
           }`}
           type="submit"
         >
-          {state.loading ? (
+          {signup.loading ? (
             <img
               style={{ width: "50px" }}
               className=" end-0 top-0"
@@ -205,7 +224,7 @@ const Signup = () => {
           {" "}
           <Link to={"/login"}>Already have an Account?</Link>
         </small>
-        <p className="mt-3 text-muted">© 2023–2030 jai.corp</p>
+        <p className="mt-3 text-muted">© 2023-2030 jai.corp</p>
       </form>
     </section>
   );

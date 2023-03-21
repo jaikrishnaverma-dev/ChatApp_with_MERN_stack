@@ -9,6 +9,9 @@
 .myFont{
   color: var(--color0);
 }
+.bg-mine{
+background-color: var(--color5);
+}
 body{
   background-color: var(--color5);
 }
@@ -49,7 +52,7 @@ border-bottom: 4.7px solid transparent;
   width: 50px;
   height: 50px;
 }
-.btn-mine:hover{
+.btn-mine:hover,.btn-msg:hover{
   background-color: var(--color1);
   color: var(--color5);
 }
