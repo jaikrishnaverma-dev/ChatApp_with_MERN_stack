@@ -17,15 +17,15 @@ const Routers = () => {
       children: [
         {
           path: "/",
-          element: <Chat />
+          element:<Secure Component={Chat}/>
         },
         {
           path: "/chat",
-          element: <Chat />
+          element: <Secure Component={Chat}/>
         },
         {
           path: "/users",
-          element: <Users />,
+          element:<Secure Component={Users}/>,
           children: [],
         },
         {
@@ -36,7 +36,7 @@ const Routers = () => {
     },
     {
             path: "/chat/:id",
-            element: <ChatList />
+            element: <Secure Component={ChatList}/>
     },
     {
       path: "/login",

@@ -7,9 +7,9 @@ const Authenticate = () => {
     const navigate=useNavigate()
     const { state } = useContext(MyContext);
     useEffect(() => {
-      if (!state.session) {
+      if (Object.keys(state.session).length===0) {
         navigate("/login");
       }
-    },[state.session]);
+    },[state]);
   }
   export default Authenticate

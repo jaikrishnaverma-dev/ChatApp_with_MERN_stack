@@ -7,7 +7,7 @@ const AlreadyLogged = () => {
     const navigate=useNavigate()
     const { state } = useContext(MyContext);
     useEffect(() => {
-        if(state.session)
+        if(Object.keys(state.session).length!==0)
         navigate("/");
     },[state]);
   }
