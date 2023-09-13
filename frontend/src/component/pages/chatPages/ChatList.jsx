@@ -5,7 +5,9 @@ import { useParams } from "react-router-dom";
 import useFetchFun from "../../../customHooks/useFetchFun";
 import { MyContext } from "../../../myContext/MyContext";
 import ChatHeader from "../../mui_comp/ChatHeader";
-
+import io from 'socket.io-client'
+const ENDPOINT="http://localhost:5000";
+var socket, selectedChatCompare;
 const ChatList = () => {
   const bottom = useRef(null);
   const { state } = useContext(MyContext);
@@ -13,6 +15,7 @@ const ChatList = () => {
   const [fetch, setfetch] = useState(true);
   const { apiCaller, loading } = useFetchFun();
   const [message, setMessage] = useState();
+  const [socketConnected,setSocketConnected]=useState(false)
 // fetch message using custom hook
   const fetchMessage = async () => {
     const result = await apiCaller(
@@ -30,6 +33,7 @@ const ChatList = () => {
   useEffect(() => {
     bottom.current?.scrollIntoView({ behavior: "smooth" });
   }, [message]);
+
   const messageSender = async (e) => {
     e.preventDefault();
     apiCaller(
@@ -46,6 +50,13 @@ const ChatList = () => {
     e.target.reset();
   };
 
+useEffect(()=>{
+socket = io(ENDPOINT) 
+socket.emit("setup",  state.session);
+socket.on("connection",()=>setSocketConnected(true))
+},[])
+
+console.log('state',state)
   if (!state.tempChat)
     return (
       <Box sx={{ width: "100%" }}>

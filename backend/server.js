@@ -20,5 +20,19 @@ app.use("/api/message", messageRoutes);
 app.use(notFound);
 app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
-app.listen(5000, console.log(`Server started on port ${PORT}`.yellow.bold)); // start on given server
+const server = app.listen(5000, console.log(`Server started on port ${PORT}`.yellow.bold)); // start on given server
+
+const io =require("socket.io")(server,{
+  pingTimeout : 60000,
+  cors:{
+    origin: "http://localhost:3000"
+  }
+});
+io.on("connection",(socket)=>{
+socket.on('setup',(userData)=>{
+  socket.join(userData._id)
+  console.log(userData._id )
+  socket.emit("we conntected")
+})
+})
 // now type in console => node  backend/server.js
