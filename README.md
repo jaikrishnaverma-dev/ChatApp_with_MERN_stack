@@ -21,8 +21,8 @@ This project is a full-stack chat application built with the MERN (MongoDB, Expr
 
 ## Installation and Setup
 
-1. Clone the repository: `git clone https://github.com/your-username/chat-app.git`
-2. Navigate to the project directory: `cd chat-app`
+1. Clone the repository: `git clone https://github.com/jaikrishnaverma-dev/ChatApp_with_MERN_stack.git`
+2. Navigate to the project directory: `cd ChatApp_with_MERN_stack`
 3. Install dependencies:
    - Backend: `cd backend && npm install`
    - Frontend: `cd frontend && npm install`
@@ -32,9 +32,7 @@ This project is a full-stack chat application built with the MERN (MongoDB, Expr
 6. Start the frontend development server: `cd frontend && npm start`
 7. Open your browser and navigate to `http://localhost:3000` to access the application.
 
-## Demo
 
-[Link to Live Demo](#) (Replace with the actual link to your deployed application)
 
 ## Credits
 
