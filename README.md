@@ -38,7 +38,7 @@ This project is a full-stack chat application built with the MERN (MongoDB, Expr
 
 ## Credits
 
-This project was created by [Your Name]. Special thanks to [Any contributors or resources you'd like to mention].
+This project was created by jai krishna verma. Special thanks to [Any contributors or resources you'd like to mention].
 
 ## License
 
